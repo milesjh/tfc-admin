@@ -24,21 +24,26 @@ resource "tfe_oauth_client" "github" {
   service_provider = "github"
 }
 
-module "app_service_workspaces" {
-  source  = "app.terraform.io/mjh-demo/workspace/tfe"
+module "azdo_app_service_workspaces" {
+  source  = "app.terraform.io/milesjh-sandbox/workspace-gh/tfe"
   version = "0.1.0"
 
   for_each = local.as_apps
 
   use_case_name          = each.key
+  oauth_token_id         = data.tfe_oauth_client.azdo.oauth_token_id
+  tfe_team_developers_id = tfe_team.developers.id
+  tfe_team_ops_id        = tfe_team.ops.id
+}
 
-  oauth_token_id         = data.tfe_oauth_client.github.oauth_token_id
-  aws_access_key         = var.aws_access_key
-  aws_secret_key         = var.aws_secret_key
-  arm_client_id          = var.arm_client_id
-  arm_client_secret      = var.arm_client_secret
-  arm_tenant_id          = var.arm_tenant_id
-  arm_subscription_id    = var.arm_subscription_id
+module "gh_app_service_workspaces" {
+  source  = "app.terraform.io/milesjh-sandbox/workspace-azdo/tfe"
+  version = "0.1.0"
+
+  for_each = local.as_apps
+
+  use_case_name          = each.key
+  oauth_token_id         = tfe_oauth_client.github.oauth_token_id
   tfe_team_developers_id = tfe_team.developers.id
   tfe_team_ops_id        = tfe_team.ops.id
 }
