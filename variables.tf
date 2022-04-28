@@ -1,9 +1,3 @@
-variable "tfc_token" {
-  description = "TFC User or Team Token to be used for Terraform Cloud Changes"
-}
-variable "gh_token" {
-  description = "GitHub PAT or OAuth Token to be used for GitHub Repo changes"
-}
 variable "vcs_azdo_oauth_client_id" {
   description = "OAuth Client ID associated with Azure DevOps Services VCS Integration (ex: oc-xxxxxxxxx)"
 }
@@ -13,9 +7,6 @@ variable "vcs_github_oauth_token" {
 variable "tfc_org" {
   description = "Target TFC Org for workspaces"
   default = "milesjh-sandbox"
-}
-variable "oauth_token_id" {
-  description = "OAuth Token ID to be used for VCS Integration"
 }
 variable "arm_client_id" {
   description = "Azure Client ID"

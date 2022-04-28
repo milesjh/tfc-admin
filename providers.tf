@@ -8,6 +8,10 @@ terraform {
       source  = "integrations/github"
       version = "~> 4.23"
     }
+    azuredevops = {
+      source = "microsoft/azuredevops"
+      version = "~> 0.2"
+    }
     # aws = {
     #   source  = "hashicorp/aws"
     #   version = "~> 4.11"
@@ -18,7 +22,7 @@ terraform {
     # }
   }
   cloud {
-    organization = "mjh-demo"
+    organization = "milesjh-sandbox"
 
     workspaces {
       tags = ["tfc-admin"]
@@ -26,14 +30,12 @@ terraform {
   }
 }
 
-provider "github" {
-  token = var.gh_token
-  owner = "milesjh"
-}
+provider "tfe" {}
 
-provider "tfe" {
-  hostname = var.tfc_hostname
-  token    = var.tfc_token
+provider "github" {}
+
+provider "azuredevops" {
+  org_service_url = "https://dev.azure.com/milesjh-sandbox/"
 }
 
 # provider "aws" {

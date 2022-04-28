@@ -1,117 +1,44 @@
-resource "tfe_organization_membership" "developer" {
-  organization = var.org
-  email        = "harrison.milesj+developer@gmail.com"
+locals {
+  as_apps = toset(
+    [
+      "ace", 
+      "bge", 
+      "comed", 
+      "dpl", 
+      "peco", 
+      "pepco"
+    ]
+  )
 }
 
-resource "tfe_team" "developers" {
-  name         = "developers"
-  organization = var.org
+data "tfe_oauth_client" "azdo" {
+  oauth_client_id = var.vcs_azdo_oauth_client_id
 }
 
-resource "tfe_team_organization_member" "developer" {
-  team_id                    = tfe_team.developers.id
-  organization_membership_id = tfe_organization_membership.developer.id
+resource "tfe_oauth_client" "github" {
+  name             = "GitHub"
+  organization     = var.tfc_org
+  api_url          = "https://api.github.com"
+  http_url         = "https://github.com"
+  oauth_token      = var.vcs_github_oauth_token
+  service_provider = "github"
 }
 
-resource "tfe_organization_membership" "ops" {
-  organization = var.org
-  email        = "harrison.milesj+operator@gmail.com"
-}
-
-resource "tfe_team" "ops" {
-  name         = "ops"
-  organization = var.org
-}
-
-resource "tfe_team_organization_member" "operator" {
-  team_id                    = tfe_team.ops.id
-  organization_membership_id = tfe_organization_membership.ops.id
-}
-
-resource "tfe_registry_module" "terraform-tfe-workspace" {
-  vcs_repo {
-    display_identifier = "milesjh/terraform-tfe-workspace"
-    identifier         = "milesjh/terraform-tfe-workspace"
-    oauth_token_id     = var.oauth_token
-  }
-}
-
-module "corp_it_dev_workspace" {
+module "app_service_workspaces" {
   source  = "app.terraform.io/mjh-demo/workspace/tfe"
-  version = "0.0.3"
+  version = "0.1.0"
 
-  use_case_name          = "corp_it"
-  org                    = var.org
-  vcs_identifier         = var.vcs_identifier
-  oauth_token            = var.oauth_token
+  for_each = local.as_apps
+
+  use_case_name          = each.key
+
+  oauth_token_id         = data.tfe_oauth_client.github.oauth_token_id
   aws_access_key         = var.aws_access_key
   aws_secret_key         = var.aws_secret_key
   arm_client_id          = var.arm_client_id
   arm_client_secret      = var.arm_client_secret
   arm_tenant_id          = var.arm_tenant_id
   arm_subscription_id    = var.arm_subscription_id
-  creator_workspace      = var.creator_workspace
   tfe_team_developers_id = tfe_team.developers.id
   tfe_team_ops_id        = tfe_team.ops.id
-  environment            = "dev"
-}
-
-module "research_dev_workspace" {
-  source  = "app.terraform.io/mjh-demo/workspace/tfe"
-  version = "0.0.3"
-
-  use_case_name          = "research"
-  org                    = var.org
-  vcs_identifier         = var.vcs_identifier
-  oauth_token            = var.oauth_token
-  aws_access_key         = var.aws_access_key
-  aws_secret_key         = var.aws_secret_key
-  arm_client_id          = var.arm_client_id
-  arm_client_secret      = var.arm_client_secret
-  arm_tenant_id          = var.arm_tenant_id
-  arm_subscription_id    = var.arm_subscription_id
-  creator_workspace      = var.creator_workspace
-  tfe_team_developers_id = tfe_team.developers.id
-  tfe_team_ops_id        = tfe_team.ops.id
-  environment            = "dev"
-}
-
-module "finance_dev_workspace" {
-  source  = "app.terraform.io/mjh-demo/workspace/tfe"
-  version = "0.0.3"
-
-  use_case_name          = "finance"
-  org                    = var.org
-  vcs_identifier         = var.vcs_identifier
-  oauth_token            = var.oauth_token
-  aws_access_key         = var.aws_access_key
-  aws_secret_key         = var.aws_secret_key
-  arm_client_id          = var.arm_client_id
-  arm_client_secret      = var.arm_client_secret
-  arm_tenant_id          = var.arm_tenant_id
-  arm_subscription_id    = var.arm_subscription_id
-  creator_workspace      = var.creator_workspace
-  tfe_team_developers_id = tfe_team.developers.id
-  tfe_team_ops_id        = tfe_team.ops.id
-  environment            = "dev"
-}
-
-module "mfg_dev_workspace" {
-  source  = "app.terraform.io/mjh-demo/workspace/tfe"
-  version = "0.0.3"
-
-  use_case_name          = "manufacturing"
-  org                    = var.org
-  vcs_identifier         = var.vcs_identifier
-  oauth_token            = var.oauth_token
-  aws_access_key         = var.aws_access_key
-  aws_secret_key         = var.aws_secret_key
-  arm_client_id          = var.arm_client_id
-  arm_client_secret      = var.arm_client_secret
-  arm_tenant_id          = var.arm_tenant_id
-  arm_subscription_id    = var.arm_subscription_id
-  creator_workspace      = var.creator_workspace
-  tfe_team_developers_id = tfe_team.developers.id
-  tfe_team_ops_id        = tfe_team.ops.id
-  environment            = "dev"
 }
