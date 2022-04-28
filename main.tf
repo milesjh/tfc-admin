@@ -25,7 +25,7 @@ resource "tfe_oauth_client" "github" {
 }
 
 module "azdo_app_service_workspaces" {
-  source  = "app.terraform.io/milesjh-sandbox/workspace-gh/tfe"
+  source  = "app.terraform.io/milesjh-sandbox/workspace-azdo/tfe"
   version = "0.1.0"
 
   for_each = local.as_apps
@@ -37,7 +37,7 @@ module "azdo_app_service_workspaces" {
 }
 
 module "gh_app_service_workspaces" {
-  source  = "app.terraform.io/milesjh-sandbox/workspace-azdo/tfe"
+  source  = "app.terraform.io/milesjh-sandbox/workspace-gh/tfe"
   version = "0.1.0"
 
   for_each = local.as_apps
